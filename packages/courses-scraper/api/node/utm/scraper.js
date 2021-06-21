@@ -119,10 +119,10 @@ const formatBreadths = (rawBreadths) => {
 const formatID = (courseCode) => {
   // fall or full year course
   if (courseCode[8] === 'F' || courseCode[8] === 'Y') {
-    return `${courseCode}20209`;
+    return `${courseCode}20219`;
   } else {
     // winter course
-    return `${courseCode}20211`;
+    return `${courseCode}20221`;
   }
 };
 
@@ -169,15 +169,15 @@ const formatExclusions = (rawDescription) => {
 const formatTerm = (courseCode) => {
   // fall course
   if (courseCode[8] === 'F') {
-    return '2020 Fall';
+    return '2021 Fall';
   }
   // winter cours
   else if (courseCode[8] === 'S') {
-    return '2021 Winter';
+    return '2022 Winter';
   }
   // full year course
   else {
-    return '2020 Full Year';
+    return '2021 Full Year';
   }
 };
 
@@ -360,7 +360,7 @@ const scrape = async (startRatio, endRatio) => {
       // write course data to json is the course is not empty
       if (currCourseData.meeting_sections.length != 0) {
         fs.writeFile(
-          `output/${fullCourseCode}.json`,
+          `output/courses/${fullCourseCode}.json`,
           JSON.stringify(currCourseData),
           (err) => {
             if (err) {

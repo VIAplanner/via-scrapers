@@ -24,10 +24,7 @@ import fs from 'fs';
 
   let totalNumCourses = await page.evaluate(() => {
     return parseInt(
-      document
-        .querySelector('div.dataTables_info')
-        .innerText.split(' ')[3]
-        .replace(',', ''),
+      document.querySelector('div.dataTables_info').innerText.split(' ')[3].replace(',', ''),
     );
   });
 
@@ -47,13 +44,15 @@ import fs from 'fs';
 
       rawOdd.forEach((element) => {
         let courseCode = element.querySelectorAll('td')[1].innerText;
+        let url = element.querySelectorAll('td')[1].querySelector('a').href;
         let term = element.querySelectorAll('td')[6].innerText;
-        currCourseCodes.push({ courseCode, term });
+        currCourseCodes.push({ courseCode, term, url });
       });
       rawEven.forEach((element) => {
         let courseCode = element.querySelectorAll('td')[1].innerText;
+        let url = element.querySelectorAll('td')[1].querySelector('a').href;
         let term = element.querySelectorAll('td')[6].innerText;
-        currCourseCodes.push({ courseCode, term });
+        currCourseCodes.push({ courseCode, term, url });
       });
 
       return currCourseCodes;
