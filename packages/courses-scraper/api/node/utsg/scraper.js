@@ -22,7 +22,7 @@ const formatTime = ({ meetingDay, meetingStartTime, meetingEndTime, assignedRoom
   currTime.setStart(timeToSeconds(meetingStartTime));
   currTime.setEnd(timeToSeconds(meetingEndTime));
   currTime.setDuration(timeToSeconds(meetingEndTime) - timeToSeconds(meetingStartTime));
-  currTime.setLocation(assignedRoom1);
+  currTime.setLocation(assignedRoom1 || "");
 
   switch (meetingDay) {
     case 'MO': {
@@ -52,7 +52,7 @@ const formatTime = ({ meetingDay, meetingStartTime, meetingEndTime, assignedRoom
 
 (async () => {
   const spinner = ora({
-    text: 'Calculating total time',
+    text: 'Calculating total time ...',
     spinner: {
       interval: 40,
       frames: ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'],
@@ -139,8 +139,6 @@ const formatTime = ({ meetingDay, meetingStartTime, meetingEndTime, assignedRoom
             currMeetingSection.setEnrolment(actualEnrolment);
             currMeetingSection.setMethod(deliveryMode === 'CLASS' ? 'INPER' : 'SYNC');
 
-            // console.log(code);
-
             Object.values(schedule).forEach((rawTime) => {
               if (formatTime(rawTime)) currMeetingSection.addTime(formatTime(rawTime));
             });
@@ -155,8 +153,10 @@ const formatTime = ({ meetingDay, meetingStartTime, meetingEndTime, assignedRoom
           },
         );
 
-        currCourse.save();
         progressBar.increment();
+        if (currCourse.meeting_sections.length === 0) return;
+
+        currCourse.save();
       },
     );
   });
