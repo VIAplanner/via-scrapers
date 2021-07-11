@@ -1,7 +1,10 @@
+import dotenv from 'dotenv';
+dotenv.config();
 import puppeteer from 'puppeteer';
 import cliProgress from 'cli-progress';
 import ora from 'ora';
 import fs from 'fs';
+import axios from 'axios';
 
 (async () => {
   const spinner = ora({
@@ -13,7 +16,7 @@ import fs from 'fs';
   }).start();
 
   const browser = await puppeteer.launch({
-    executablePath: '/Applications/Chromium.app/Contents/MacOS/Chromium',
+    executablePath: process.env.CHROME_PATH,
   });
   const page = await browser.newPage();
   await page.goto(
@@ -22,11 +25,26 @@ import fs from 'fs';
   );
   await page.select("select[name='courseSearchResults_length']", '100');
 
-  let totalNumCourses = await page.evaluate(() => {
+  const totalUTMCourses = await page.evaluate(() => {
     return parseInt(
       document.querySelector('div.dataTables_info').innerText.split(' ')[3].replace(',', ''),
     );
   });
+
+  let totalUTSGCourses = 0;
+
+  const utsgRawData = await Promise.all([
+    axios('https://timetable.iit.artsci.utoronto.ca/api/20219/courses?section=F'),
+    axios('https://timetable.iit.artsci.utoronto.ca/api/20219/courses?section=S'),
+    axios('https://timetable.iit.artsci.utoronto.ca/api/20219/courses?section=Y'),
+  ]);
+
+  utsgRawData.forEach((rawData) => {
+    const allSessionCourses = rawData.data;
+    totalUTSGCourses += Object.keys(allSessionCourses).length;
+  });
+
+  const totalNumCourses = totalUTMCourses + totalUTSGCourses;
 
   spinner.stop();
 
@@ -36,6 +54,7 @@ import fs from 'fs';
 
   progressBar.start(totalNumCourses, 0);
 
+  // UTM and UTSC Courses
   while (true) {
     let currCourseCodes = await page.evaluate(() => {
       let currCourseCodes = [];
@@ -59,7 +78,10 @@ import fs from 'fs';
     });
 
     progressBar.increment(currCourseCodes.length);
-    allCourseCodes = allCourseCodes.concat(currCourseCodes);
+    allCourseCodes = allCourseCodes.concat(
+      // remove utsg courses
+      currCourseCodes.filter(({ courseCode }) => courseCode[7] !== '1' && courseCode[7] !== '0'),
+    );
 
     let endResultNum = await page.evaluate(() => {
       return parseInt(
@@ -72,7 +94,7 @@ import fs from 'fs';
     });
 
     // if we have reached the final course, stop the loop
-    if (endResultNum === totalNumCourses) {
+    if (endResultNum === totalUTMCourses) {
       break;
     } else {
       //click next
@@ -81,6 +103,29 @@ import fs from 'fs';
       });
     }
   }
+
+  utsgRawData.forEach((rawData) => {
+    const allSessionCourses = rawData.data;
+    Object.keys(allSessionCourses).forEach((rawCourseCode) => {
+      const rawTerm = rawCourseCode[9];
+      let term;
+
+      if (rawTerm === 'F') {
+        term = '2021 Fall';
+      } else if (rawTerm === 'S') {
+        term = '2022 Winter';
+      } else if (rawTerm === 'Y') {
+        term = '2021 Fall +';
+      }
+
+      allCourseCodes.push({
+        courseCode: rawCourseCode.slice(0, 8),
+        term,
+      });
+
+      progressBar.increment();
+    });
+  });
 
   fs.writeFile(`output/allCourseCodes.json`, JSON.stringify(allCourseCodes), (err) => {
     if (err) {

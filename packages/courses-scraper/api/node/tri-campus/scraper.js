@@ -1,8 +1,11 @@
+import dotenv from 'dotenv';
 import { Cluster } from 'puppeteer-cluster';
 import Course from '../structures/course';
 import MeetingSection from '../structures/meetingSection';
 import Time from '../structures/time';
 import fs from 'fs';
+
+dotenv.config();
 
 // convert 24 hours to seconds
 const timeToSeconds = (hour) => {
@@ -145,7 +148,7 @@ const scrape = async () => {
     maxConcurrency: 15,
     monitor: true,
     puppeteerOptions: {
-      executablePath: '/Applications/Chromium.app/Contents/MacOS/Chromium',
+      executablePath: process.env.CHROME_PATH,
     },
   });
 
@@ -290,13 +293,13 @@ const scrape = async () => {
   let allCourseInfo = JSON.parse(rawInfo);
 
   // these are for testing only
-  // allCourseInfo = [
-  //   {
-  //     courseCode: 'ARA312Y5',
-  //     term: '2021 Fall',
-  //     url: 'https://coursefinder.utoronto.ca/course-search/search/courseSearch/coursedetails/ARA312Y5Y20219',
-  //   },
-  // ];
+  allCourseInfo = [
+    {
+      courseCode: 'ARA312Y5',
+      term: '2021 Fall',
+      url: 'https://coursefinder.utoronto.ca/course-search/search/courseSearch/coursedetails/ARA312Y5Y20219',
+    },
+  ];
 
   allCourseInfo.forEach(({ url, courseCode, term }) => {
     if (!term.includes('Summer')) {
