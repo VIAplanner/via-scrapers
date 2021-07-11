@@ -290,16 +290,16 @@ const scrape = async () => {
   let baseURL =
     'https://coursefinder.utoronto.ca/course-search/search/courseInquiry?methodToCall=start&viewId=CourseDetails-InquiryView&courseId=';
   let rawInfo = fs.readFileSync('output/allCourseCodes.json');
-  let allCourseInfo = JSON.parse(rawInfo);
+  let allCourseInfo = JSON.parse(rawInfo).filter(({ url }) => url);
 
   // these are for testing only
-  allCourseInfo = [
-    {
-      courseCode: 'ARA312Y5',
-      term: '2021 Fall',
-      url: 'https://coursefinder.utoronto.ca/course-search/search/courseSearch/coursedetails/ARA312Y5Y20219',
-    },
-  ];
+  // allCourseInfo = [
+  //   {
+  //     courseCode: 'ARA312Y5',
+  //     term: '2021 Fall',
+  //     url: 'https://coursefinder.utoronto.ca/course-search/search/courseSearch/coursedetails/ARA312Y5Y20219',
+  //   },
+  // ];
 
   allCourseInfo.forEach(({ url, courseCode, term }) => {
     if (!term.includes('Summer')) {
