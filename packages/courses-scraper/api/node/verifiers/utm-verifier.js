@@ -1,7 +1,10 @@
+import dotenv from 'dotenv';
 import { Cluster } from 'puppeteer-cluster';
 import puppeteer from 'puppeteer';
 import ora from 'ora'; // spinning circle
 import fs from 'fs';
+
+dotenv.config();
 
 const formatCourseCode = (rawCourseCode) => {
   return rawCourseCode.slice(0, 9);
@@ -22,7 +25,7 @@ const formatSectionCode = (rawSectionCode) => {
 
   const baseURL = 'https://student.utm.utoronto.ca/timetable';
   const browser = await puppeteer.launch({
-    executablePath: '/Applications/Chromium.app/Contents/MacOS/Chromium',
+    executablePath: process.env.CHROME_PATH,
   });
   const page = await browser.newPage();
   await page.goto(baseURL, { waitUntil: 'networkidle0' });
@@ -47,7 +50,7 @@ const formatSectionCode = (rawSectionCode) => {
     concurrency: Cluster.CONCURRENCY_CONTEXT,
     maxConcurrency: 15,
     monitor: true,
-    puppeteerOptions: { executablePath: '/Applications/Chromium.app/Contents/MacOS/Chromium' },
+    puppeteerOptions: { executablePath: process.env.CHROME_PATH },
   });
 
   // Event handler to be called in case of problems
@@ -87,9 +90,7 @@ const formatSectionCode = (rawSectionCode) => {
 
     for (let currRawCourse of allCoursesRawInfo) {
       let fullCourseCode = formatCourseCode(currRawCourse.rawTitle);
-      let currCourse = JSON.parse(
-        fs.readFileSync(`output/courses/${fullCourseCode}.json`),
-      );
+      let currCourse = JSON.parse(fs.readFileSync(`output/courses/${fullCourseCode}.json`));
 
       currRawCourse.rawClosedMeetingSections.forEach((currRawSection) => {
         let currSectionCode = formatSectionCode(currRawSection);
@@ -101,10 +102,7 @@ const formatSectionCode = (rawSectionCode) => {
         });
       });
 
-      fs.writeFileSync(
-        `output/courses/${fullCourseCode}.json`,
-        JSON.stringify(currCourse),
-      );
+      fs.writeFileSync(`output/courses/${fullCourseCode}.json`, JSON.stringify(currCourse));
     }
   };
 
