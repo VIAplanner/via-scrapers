@@ -1,25 +1,35 @@
-# UTM Course Scraper
+# UofT Course Scraper
 
 ## Overview
-This package contains the scraper for obtaining UTM courses. The scraped courses will be stored as js files, please visit our [Documentation Website](https://uoftcoursetools.tech/course-api/#_1-course) to see the schema of the data. 
+This package contains the scraper for obtaining UofT courses (all 3 campuses). The scraped courses will be stored as js files, please visit our [Documentation Website](https://uoftcoursetools.tech/course-api/#_1-course) to see the schema of the data.  
 
-To see an example usage of the scraper, run
+## Note
+The python scrapers are not longer maintained. Please use the node versions
+## Usage Example
+### 1. Install the necessary packages
+Command: `npm install`
 
-`
-python3 example_usage.py
-`
+### 2. Setup the env variables using the given `.env.template`
+
+### 3. Run setup.bash
+Command: `sh setup.bash`
+### 4. Scrape all the course codes
+Command: `npm run scrape:code` \
+Explanation: This will produce a file called `allCourseCodes.json` which contains, like you guessed, all the course codes. This command is essentially a preprocessor for our scraper, making the scraping progress accurate and much faster.
+
+### 5. Scrape some courses
+Command: `npm run scrape` (there are more options in package.json)\
+Explanation: All the scraped courses will be in `output/courses`
+
 
 ## API Component Breakdown
-- [scraper.py](./api/scraper.py): 
-  - Displays progress in the terminal.
-  - Export the scraped data as json files, with the name of the courses as its name. i.e CSC207H5F will be stored as CSC207H5F.json.
-- [uoftscraper.py](./api/uoftscraper.py):
-  - Retrieves course data from [Course Finder](http://coursefinder.utoronto.ca/course-search/search) using BeautifulSoup and Requests. 
-  - Different course soups are placed in a queue, then parsed later by multiple workers (multi-threading). 
-  - **Note**: Currently, the scraper only returns UTM courses. However, this can be easily improved on in the scraper by deleting the if statement on line 41.
+- [scraper.js](./api/node/tri-campus/scraper.js):
+  - Retrieves course data from [Course Finder](http://coursefinder.utoronto.ca/course-search/search) using Puppeteer. 
+  - Different courses are placed in a queue, then parsed later by multiple workers (multi-threading). 
 - [uploader.py](./api/uploader.py)
   - Uploads the json files stored in **output** onto MongoDB.
   - Can be used to upload to other server by changing the server address on line 9.
   - Progress is displayed in the terminal.
+  - Note: there's no instructions for this step purposefully
 
 
