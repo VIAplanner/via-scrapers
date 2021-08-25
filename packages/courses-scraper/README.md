@@ -9,7 +9,7 @@ The python scrapers are not longer maintained. Please use the node versions
 ### 1. Install the necessary packages
 Command: `npm install`
 
-### 2. Setup the env variables using the given `.env.template`
+### 2. Create a file called `.env` and follow the template given in `.env.template`
 
 ### 3. Run setup.bash
 Command: `sh setup.bash`
