@@ -1,34 +1,42 @@
 export default class MeetingSection {
-    constructor(){
-        this.sectionCode = ""
-        this.instructors = []
-        this.times = []
-        this.size = 0
-        this.enrolment = 0 
-        this.method = ""
-    }
+  constructor() {
+    this.sectionCode = '';
+    this.instructors = [];
+    this.times = [];
+    this.size = 0;
+    this.enrolment = 0;
+    this.method = '';
+  }
 
-    setSectionCode(sectionCode){
-        this.sectionCode = sectionCode
-    }
+  setSectionCode(sectionCode) {
+    this.sectionCode = sectionCode;
+  }
 
-    addInstructor(instructor){
-        this.instructors.push(instructor)
-    }
+  setInstructors(instructor) {
+    this.instructors = instructor;
+  }
 
-    addTime(time){
-        this.times.push(time)
-    }
+  addInstructor(instructor) {
+    this.instructors.push(instructor);
+  }
 
-    setSize(size){
-        this.size = size
-    }
+  setTimes(times) {
+    this.times = times;
+  }
 
-    setEnrolment(enrolment){
-        this.enrolment = enrolment
-    }
+  addTime(time) {
+    this.times.push(time);
+  }
 
-    setMethod(method){
-        this.method = method
-    }
+  setSize(size) {
+    this.size = size;
+  }
+
+  setEnrolment(enrolment) {
+    this.enrolment = enrolment;
+  }
+
+  setMethod(method) {
+    this.method = method;
+  }
 }

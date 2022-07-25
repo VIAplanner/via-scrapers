@@ -75,6 +75,10 @@ export default class Course {
     this.distribution = distribution;
   }
 
+  setMeetingSections(meetingSections) {
+    this.meeting_sections = meetingSections;
+  }
+
   addMeetingSection(meetingSection) {
     this.meeting_sections.push(meetingSection);
   }
