@@ -16,7 +16,7 @@ const body = {
   },
   departmentProps: [],
   campuses: [],
-  sessions: ['20229', '20231', '20229-20231'],
+  sessions: ['20239', '20241', '20239-20241'],
   requirementProps: [],
   instructor: '',
   courseLevels: [],
@@ -123,6 +123,7 @@ const parseDay = (dayNum) => {
             currentEnrolment,
             deliveryModes,
             meetingTimes,
+            openLimitInd,
           }) => {
             // skip if no meeting times
             if (meetingTimes.length === 0) {
@@ -135,6 +136,7 @@ const parseDay = (dayNum) => {
             meetingSection.setSize(maxEnrolment);
             meetingSection.setEnrolment(currentEnrolment);
             meetingSection.setMethod(deliveryModes[0].mode);
+            meetingSection.setOpenLimitInd(openLimitInd);
 
             // if there are multiple meeting times for a Y course, take the first on
             let parsedMeetingTimes = meetingTimes;
@@ -142,7 +144,7 @@ const parseDay = (dayNum) => {
               parsedMeetingTimes = [parsedMeetingTimes[0]];
             }
 
-            parsedMeetingTimes = parsedMeetingTimes.forEach(
+            parsedMeetingTimes.forEach(
               ({
                 start: { millisofday: startTimeMillisecond, day },
                 end: { millisofday: endTimeMillisecond },
@@ -159,7 +161,9 @@ const parseDay = (dayNum) => {
                 time.setDuration(duration);
                 time.setLocation(`${buildingCode} ${buildingRoomNumber}`);
 
-                meetingSection.addTime(time);
+                if(time.day !== 'SATURDAY' && time.day !== 'SUNDAY') {
+                  meetingSection.addTime(time);
+                }
               },
             );
 

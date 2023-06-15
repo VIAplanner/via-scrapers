@@ -6,6 +6,7 @@ export default class MeetingSection {
     this.size = 0;
     this.enrolment = 0;
     this.method = '';
+    this.openLimitInd = 'N';
   }
 
   setSectionCode(sectionCode) {
@@ -38,5 +39,9 @@ export default class MeetingSection {
 
   setMethod(method) {
     this.method = method;
+  }
+
+  setOpenLimitInd(openLimitInd) {
+    this.openLimitInd = openLimitInd;
   }
 }
